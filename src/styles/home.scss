@@ -23,6 +23,8 @@
 
     .wrapper {
       height: 100%;
+      margin: 0 auto;
+      max-width: 320px;
 
       display: flex;
       flex-direction: column;
@@ -40,6 +42,7 @@
       strong {
         font: 500 20px 'Poppins', sans-serif;
         margin-bottom: 32px;
+        text-align: center;
       }
 
       button {
