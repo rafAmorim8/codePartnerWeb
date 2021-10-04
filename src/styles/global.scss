@@ -1,0 +1,23 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  color: #29292e;
+}
+
+:root {
+  --color-purple: #6C63FF;
+  --color-grey: #F2F2F2;
+  --color-dark: #3F3D56;
+}
+
+body,
+input,
+button,
+textarea {
+  font: 400 16px 'Roboto', sans-serif;
+  color: var(--color-dark);
+}
