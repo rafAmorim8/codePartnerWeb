@@ -1,4 +1,4 @@
-import { createContext, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 
 import { auth, firebase } from './services/firebase';
@@ -22,6 +22,31 @@ export const AuthContext = createContext({} as AuthContextType);
 
 function App() {
   const [user, setUser] = useState<User>();
+
+  //Check if an user has already logged in before the app starts
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(user => {
+      if (user) {
+        const { displayName, photoURL, uid, email } = user;
+
+        if (!displayName || !photoURL) {
+          throw new Error('Missing information from Google Account.');
+        }
+
+        setUser({
+          id: uid,
+          name: displayName,
+          avatar: photoURL,
+          email: email
+        });
+      }
+    })
+
+    //unsubscibe from Auth event listener to avoid errors
+    return () => {
+      unsubscribe();
+    }
+  }, []);
 
   async function signInWithGithub() {
     const provider = new firebase.auth.GithubAuthProvider();

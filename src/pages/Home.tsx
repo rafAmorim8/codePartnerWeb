@@ -27,6 +27,7 @@ export function Home() {
       <main>
         <div className="wrapper">
           <h1>Code<span>Parner</span></h1>
+          <h2>{user?.name}</h2>
           <strong>Find a developer to work or study together.</strong>
           <button onClick={signIn}>
             <img src={githubIcon} alt="Login with gitHub" />
