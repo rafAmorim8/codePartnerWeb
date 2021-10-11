@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 
-import { auth, firebase } from './services/firebase';
+import { auth, database, firebase } from './services/firebase';
 
 import { Home } from './pages/Home';
 import { DevList } from './pages/DevList';
@@ -11,6 +11,7 @@ type User = {
   email: string | null,
   avatar: string,
   id: string,
+  token: string
 }
 
 type AuthContextType = {
@@ -25,9 +26,10 @@ function App() {
 
   //Check if an user has already logged in before the app starts
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(user => {
+    const unsubscribe = auth.onAuthStateChanged(async user => {
       if (user) {
         const { displayName, photoURL, uid, email } = user;
+        const token = await user.getIdToken();
 
         if (!displayName || !photoURL) {
           throw new Error('Missing information from Google Account.');
@@ -37,7 +39,8 @@ function App() {
           id: uid,
           name: displayName,
           avatar: photoURL,
-          email: email
+          email: email,
+          token: token
         });
       }
     })
@@ -55,6 +58,7 @@ function App() {
 
     if (result.user) {
       const { displayName, email, photoURL, uid } = result.user;
+      const token = await result.user.getIdToken();
 
       if (!displayName || !photoURL) {
         throw new Error('Missing information from Github Account');
@@ -64,7 +68,8 @@ function App() {
         name: displayName,
         email: email,
         avatar: photoURL,
-        id: uid
+        id: uid,
+        token: token
       });
     }
   }
