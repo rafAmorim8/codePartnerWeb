@@ -33,38 +33,34 @@ function App() {
   const [user, setUser] = useState<User>();
   const history = useHistory();
 
-  // // Check if an user has already logged in before the app starts
-  // useEffect(() => {
-  //   const unsubscribe = auth.onAuthStateChanged(async user => {
-  //     if (user) {
-  //       const { displayName, photoURL, uid, email } = user;
-  //       // const token = await user.token;
+  // Check if an user has already logged in before the app starts
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async user => {
+      if (user) {
+        const { displayName, photoURL, uid, email } = user;
 
-  //       console.log(auth.updateCurrentUser(user))
+        if (!displayName || !photoURL) {
+          throw new Error('Missing information from Google Account.');
+        }
 
-  //       if (!displayName || !photoURL) {
-  //         throw new Error('Missing information from Google Account.');
-  //       }
+        setUser({
+          id: uid,
+          name: displayName,
+          avatar: photoURL,
+          email: email,
+          token: `test`
+        });
+      }
+    })
 
-  //       setUser({
-  //         id: uid,
-  //         name: displayName,
-  //         avatar: photoURL,
-  //         email: email,
-  //         token: `test`
-  //       });
-  //     }
-  //   })
-
-  //   //unsubscibe from Auth event listener to avoid errors
-  //   return () => {
-  //     unsubscribe();
-  //   }
-  // }, []);
+    //unsubscibe from Auth event listener to avoid errors
+    return () => {
+      unsubscribe();
+    }
+  }, []);
 
   async function signInWithGithub() {
     const provider = new firebase.auth.GithubAuthProvider();
-    // const auth = getAuth();
 
     signInWithPopup(auth, provider).then((result) => {
       const credential = GithubAuthProvider.credentialFromResult(result);
