@@ -1,7 +1,8 @@
 import { useContext, useEffect, useState } from "react";
+import { useHistory } from 'react-router-dom'
 import { AuthContext } from "../App";
 
-import { database } from '../services/firebase';
+import { auth, database } from '../services/firebase';
 
 import '../styles/devList.scss';
 
@@ -30,14 +31,15 @@ type User = {
 }
 
 export function DevList() {
-  const { user, logOff } = useContext(AuthContext);
+  const { user, setUser } = useContext(AuthContext);
   const [devList, setDevList] = useState<User[]>([]);
+  const history = useHistory();
 
   useEffect(() => {
     const userListRef = database.ref('users');
 
     if (user) {
-      userListRef.once('value', userList => {
+      userListRef.on('value', userList => {
         const databaseUsers: FirebaseUser = userList.val();
 
         const parsedUsers = Object.entries(databaseUsers).map(([key, value]) => {
@@ -76,6 +78,8 @@ export function DevList() {
     })
       .then(result => result.json())
       .then(data => {
+        console.log(data);
+
         userListRef.push({
           name: data.name,
           username: data.login,
@@ -91,6 +95,12 @@ export function DevList() {
       .catch(err => { console.log(err) });
 
     return;
+  }
+
+  async function logOff() {
+    await auth.signOut();
+    setUser(undefined);
+    history.push("/");
   }
 
   return (
@@ -114,7 +124,7 @@ export function DevList() {
             ) : (
               devList.map(dev => {
                 return (
-                  <div className="devCard">
+                  <div className="devCard" key={dev.id}>
                     <div className="devCardHeader">
                       <img src={dev.avatar} alt={dev.name} />
                       <h3>{dev.name}</h3>
