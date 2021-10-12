@@ -1,0 +1,124 @@
+header {
+  background: #fff;
+  height: 80px;
+  width: 100%;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+  margin-bottom: 3rem;
+
+  .loggedUserInfo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      height: 40px;
+      width: 40px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+    }
+  }
+
+  .headerButtons {
+    display: flex;
+
+    button {
+      outline: none;
+      border: 0;
+      background: none;
+    }
+  }
+}
+
+main {
+  text-align: center;
+
+  h1 {
+    margin-bottom: 2rem;
+  }
+
+  .devsContainer {
+    display: grid;
+    grid-template-columns: 1fr;
+
+    .devCard {
+      background: #FFF;
+      width: 500px;
+      margin: 20px auto;
+      padding: 15px;
+      border-radius: 6px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
+
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+
+      transition: box-shadow 200ms ease-in-out;
+
+      &:hover {
+        box-shadow: 0 0 20px rgba(108, 99, 255, 0.5);
+      }
+
+      .devCardHeader {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+
+        img {
+          height: 50px;
+          width: 50px;
+          border-radius: 50%;
+        }
+
+        h3 {
+          color: var(--color-purple);
+          font-size: 2em;
+          text-align: center;
+          margin-left: 20px;
+        }
+      }
+
+      p {
+        font-size: 16px;
+      }
+
+      .devLinks {
+        align-self: end;
+        margin-top: 20px;
+
+        a {
+          color: var(--color-purple);
+          font-weight: bold;
+          text-decoration: none;
+          margin-left: 10px;
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (min-width: 1024px) {
+  main {
+    .devsContainer {
+      margin: 0 auto;
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+}
+
+@media only screen and (min-width: 1400px) {
+  main {
+    .devsContainer {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+  }
+}

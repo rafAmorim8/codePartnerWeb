@@ -13,7 +13,12 @@ type User = {
   email: string | null,
   avatar: string,
   id: string,
-  token: string | undefined
+  token: string | undefined,
+  username?: string,
+  bio?: string,
+  githubRepo?: string,
+  website?: string,
+  location?: string
 }
 
 type AuthContextType = {
@@ -27,32 +32,32 @@ export const AuthContext = createContext({} as AuthContextType);
 function App() {
   const [user, setUser] = useState<User>();
 
-  //Check if an user has already logged in before the app starts
-  // useEffect(() => {
-  //   const unsubscribe = auth.onAuthStateChanged(async user => {
-  //     if (user) {
-  //       const { displayName, photoURL, uid, email } = user;
-  //       const token = await user.getIdToken();
+  // Check if an user has already logged in before the app starts
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async user => {
+      if (user) {
+        const { displayName, photoURL, uid, email } = user;
+        const token = await user.getIdToken();
 
-  //       if (!displayName || !photoURL) {
-  //         throw new Error('Missing information from Google Account.');
-  //       }
+        if (!displayName || !photoURL) {
+          throw new Error('Missing information from Google Account.');
+        }
 
-  //       setUser({
-  //         id: uid,
-  //         name: displayName,
-  //         avatar: photoURL,
-  //         email: email,
-  //         token: token
-  //       });
-  //     }
-  //   })
+        setUser({
+          id: uid,
+          name: displayName,
+          avatar: photoURL,
+          email: email,
+          token: token
+        });
+      }
+    })
 
-  //   //unsubscibe from Auth event listener to avoid errors
-  //   return () => {
-  //     unsubscribe();
-  //   }
-  // }, []);
+    //unsubscibe from Auth event listener to avoid errors
+    return () => {
+      unsubscribe();
+    }
+  }, []);
 
   async function signInWithGithub() {
     const provider = new firebase.auth.GithubAuthProvider();
@@ -63,16 +68,16 @@ function App() {
 
       if (result.user) {
         const { displayName, email, photoURL, uid } = result.user;
-        let token;  
-  
+        let token;
+
         if (!displayName || !photoURL) {
           throw new Error('Missing information from Github Account');
         }
-  
-        if(credential != null){
+
+        if (credential != null) {
           token = credential.accessToken;
         }
-  
+
         setUser({
           name: displayName,
           email: email,
@@ -84,7 +89,7 @@ function App() {
     });
   }
 
-  function logOff(){
+  function logOff() {
     setUser(undefined);
 
     console.log(user);
