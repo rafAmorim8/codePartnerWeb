@@ -1,8 +1,8 @@
 import { createContext, useEffect, useState } from 'react';
 import { BrowserRouter, Route, useHistory } from 'react-router-dom';
 
-import { auth, database, firebase } from './services/firebase';
-import { getAuth, signInWithPopup, GithubAuthProvider } from "firebase/auth";
+import { auth, firebase } from './services/firebase';
+import { signInWithPopup, GithubAuthProvider } from "firebase/auth";
 
 
 import { Home } from './pages/Home';
@@ -31,7 +31,6 @@ export const AuthContext = createContext({} as AuthContextType);
 
 function App() {
   const [user, setUser] = useState<User>();
-  const history = useHistory();
 
   // Check if an user has already logged in before the app starts
   useEffect(() => {
