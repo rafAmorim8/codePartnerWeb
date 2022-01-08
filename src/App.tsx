@@ -48,7 +48,7 @@ function App() {
           name: displayName,
           avatar: photoURL,
           email: email,
-          token: `test`
+          token: `testing`
         });
       }
     })
