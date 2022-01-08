@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from 'react';
-import { BrowserRouter, Route, useHistory } from 'react-router-dom';
+import { BrowserRouter, Route } from 'react-router-dom';
 
 import { auth, firebase } from './services/firebase';
 import { signInWithPopup, GithubAuthProvider } from "firebase/auth";
