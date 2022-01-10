@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom'
 import { AuthContext } from "../App";
 
 import { auth, database } from '../services/firebase';
+import { getDatabase, onValue, ref, set } from "firebase/database";
 
 import '../styles/devList.scss';
 
@@ -32,6 +33,7 @@ type User = {
 
 export function DevList() {
   const { user, setUser } = useContext(AuthContext);
+  const [newUser, setNewUser] = useState<User>();
   const [devList, setDevList] = useState<User[]>([]);
   const history = useHistory();
 
@@ -64,7 +66,7 @@ export function DevList() {
   }, [user]);
 
   async function handleAddUser() {
-    const userListRef = database.ref('users');
+    const usersDb = getDatabase();
 
     //Get github data from authenticated user 
     let headers = new Headers({
@@ -78,9 +80,7 @@ export function DevList() {
     })
       .then(result => result.json())
       .then(data => {
-        console.log(data);
-
-        userListRef.push({
+        setNewUser({
           name: data.name,
           username: data.login,
           email: data.email,
@@ -89,8 +89,32 @@ export function DevList() {
           id: data.id,
           githubRepo: data.html_url,
           website: data.blog,
-          location: data.location
+          location: data.location,
         });
+      })
+      .then(() => {
+        if (newUser) {
+          const userRef = ref(usersDb, 'users/' + newUser.id);
+
+          //Checks if user is in the database alreay before adding them
+          onValue(userRef, (snapshot) => {
+            if (!snapshot.exists()) {
+              set(ref(usersDb, 'users/' + newUser.id), {
+                name: newUser.name,
+                username: newUser.username,
+                email: newUser.email,
+                bio: newUser.bio,
+                avatar: newUser.avatar,
+                id: newUser.id,
+                githubRepo: newUser.githubRepo,
+                website: newUser.website,
+                location: newUser.location
+              });
+            } else {
+              console.log('User already exists in the database');
+            };
+          });
+        }
       })
       .catch(err => { console.log(err) });
 
