@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
 import { useHistory } from 'react-router-dom'
-import { Button } from "../components/Button";
 import { useAuth } from "../hooks/useAuth";
 import axios from 'axios';
 
+import toast from 'react-hot-toast';
+
 import { auth, database } from '../services/firebase';
 
-import '../styles/devList.scss';
+import { Button } from "../components/Button";
 import { GithubIcon } from "../components/GithubIcon";
 import { LinkIcon } from "../components/LinkIcon";
+
+import '../styles/devList.scss';
 
 type FirebaseUser = Record<string, {
   name: string;
@@ -119,7 +122,7 @@ export function DevList() {
       const userExists = devList.find(({ username }) => username == githubUser?.username);
 
       if (userExists) {
-        alert("User already exists in the Developers list.");
+        toast.error("User already exists in the Developers list.");
         return;
       }
 
@@ -128,10 +131,10 @@ export function DevList() {
       database.ref('users').push({ ...githubUser })
         .then(() => {
           // console.log(newUser?.email);
-          alert("User added to Dev List!");
+          toast.success("User added to Dev List!");
           setUpdate(!update);
         })
-        .catch((err) => alert(err));
+        .catch((err) => toast.error(err.message));
 
       return;
     }
@@ -151,7 +154,7 @@ export function DevList() {
     const userIndex = devList.findIndex(({ githubId }) => githubId == user.githubId);
 
     if (userIndex < 0) {
-      alert("User not found");
+      toast.error("User not found");
       return;
     }
 
@@ -159,9 +162,9 @@ export function DevList() {
 
     database.ref().child(`users/${userDbKey}`).remove((err) => {
       if (err) {
-        alert(err);
+        toast.error(err.message);
       } else {
-        alert("User sucessfuly deleted");
+        toast.success("User sucessfuly deleted");
         setUpdate(!update);
       }
     })

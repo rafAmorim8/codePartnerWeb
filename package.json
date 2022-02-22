@@ -18,6 +18,7 @@
     "latest-version": "^6.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-hot-toast": "^2.2.0",
     "react-router-dom": "^5.3.0",
     "react-scripts": "4.0.3",
     "typescript": "^4.1.2",
@@ -48,13 +49,13 @@
     ]
   },
   "devDependencies": {
-    "@types/react-router-dom": "^5.3.0",
-    "@typescript-eslint/eslint-plugin": "2.x",
-    "@typescript-eslint/parser": "2.x",
     "@types/jest": "^26.0.15",
     "@types/node": "^12.0.0",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "@types/react-router-dom": "^5.3.0",
+    "@typescript-eslint/eslint-plugin": "2.x",
+    "@typescript-eslint/parser": "2.x",
     "sass": "^1.47.0"
   }
 }
