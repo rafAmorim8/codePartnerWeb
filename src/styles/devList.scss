@@ -30,8 +30,19 @@ header {
     display: flex;
     justify-content: space-between;
 
-    button {
+    a {
       margin-left: 32px;
+      cursor: pointer;
+
+      .logout-icon {
+        color: var(--color-purple);
+        height: 30px;
+        transition: color 0.25s cubic-bezier(0.6, 0.0, 0.3, 1) 0s;
+
+        &:hover {
+          color: #5650cf;
+        }
+      }
     }
   }
 }

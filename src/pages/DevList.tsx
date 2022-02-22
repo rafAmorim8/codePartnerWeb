@@ -7,11 +7,11 @@ import toast from 'react-hot-toast';
 
 import { auth, database } from '../services/firebase';
 
-import { Button } from "../components/Button";
 import { GithubIcon } from "../components/GithubIcon";
 import { LinkIcon } from "../components/LinkIcon";
 
 import '../styles/devList.scss';
+import { LogOutIcon } from "../components/LogOutIcon";
 
 type FirebaseUser = Record<string, {
   name: string;
@@ -178,9 +178,9 @@ export function DevList() {
           <h2>{user?.name}</h2>
         </div>
         <div className="headerButtons">
-          <Button onClick={handleAddUser}>Add User</Button>
-          <Button onClick={logOff}>Log off</Button>
-          <Button onClick={handleRemoveUser}>Remove user</Button>
+          <a onClick={handleAddUser}>Add User</a>
+          <a onClick={handleRemoveUser}>Remove user</a>
+          <a onClick={logOff}><LogOutIcon /></a>
         </div>
       </header>
       <main>
