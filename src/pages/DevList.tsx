@@ -1,9 +1,10 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useHistory } from 'react-router-dom'
-import { AuthContext } from "../App";
+import { Button } from "../components/Button";
+import { useAuth } from "../hooks/useAuth";
+import axios from 'axios';
 
 import { auth, database } from '../services/firebase';
-import { getDatabase, onValue, ref, set } from "firebase/database";
 
 import '../styles/devList.scss';
 
@@ -13,6 +14,7 @@ type FirebaseUser = Record<string, {
   email: string;
   bio: string;
   avatar: string;
+  githubId: string;
   id: string;
   githubRepo: string;
   website: string;
@@ -25,6 +27,7 @@ type User = {
   email: string;
   bio: string;
   avatar: string;
+  githubId: string;
   id: string;
   githubRepo: string;
   website: string;
@@ -32,17 +35,50 @@ type User = {
 }
 
 export function DevList() {
-  const { user, setUser } = useContext(AuthContext);
+  const { user, token, setUser, signInWithGithub } = useAuth();
   const [newUser, setNewUser] = useState<User>();
+  const [update, setUpdate] = useState<boolean>(false);
   const [devList, setDevList] = useState<User[]>([]);
   const history = useHistory();
 
-  useEffect(() => {
-    const userListRef = database.ref('users');
+  async function getGithubData(token: string): Promise<User | undefined> {
+    let headers = {
+      'Accept': 'application/vnd.github.v3+json',
+      'Authorization': `token ${token}`
+    };
 
+    const response = await axios.get(`https://api.github.com/user`, {
+      headers: headers,
+    });
+
+    if (!response.data) {
+      return undefined;
+    }
+
+    const data = response.data;
+
+    return ({
+      name: data.name,
+      username: data.login,
+      email: data.email,
+      bio: data.bio,
+      avatar: data.avatar_url,
+      id: data.node_id,
+      githubId: data.id,
+      githubRepo: data.html_url,
+      website: data.blog,
+      location: data.location
+    })
+  }
+
+  useEffect(() => {
     if (user) {
-      userListRef.on('value', userList => {
+      database.ref('users').once('value', userList => {
         const databaseUsers: FirebaseUser = userList.val();
+
+        if (!databaseUsers) {
+          return
+        }
 
         const parsedUsers = Object.entries(databaseUsers).map(([key, value]) => {
           return {
@@ -51,7 +87,8 @@ export function DevList() {
             email: value.email,
             bio: value.bio,
             avatar: value.avatar,
-            id: value.id,
+            githubId: value.githubId,
+            id: key,
             githubRepo: value.githubRepo,
             website: value.website,
             location: value.location,
@@ -63,68 +100,69 @@ export function DevList() {
         console.log('The read failed: ' + errorObject.name);
       });
     }
-  }, [user]);
+  }, [user, update]);
 
   async function handleAddUser() {
-    const usersDb = getDatabase();
+    if (!token) {
+      await signInWithGithub();
+    }
 
-    //Get github data from authenticated user 
-    let headers = new Headers({
-      'Accept': 'application/vnd.github.v3+json',
-      'Authorization': `token ${user?.token}`
-    });
+    if (token) {
+      let githubUser = await getGithubData(token);
 
-    await fetch(`https://api.github.com/user`, {
-      method: 'GET',
-      headers: headers
-    })
-      .then(result => result.json())
-      .then(data => {
-        setNewUser({
-          name: data.name,
-          username: data.login,
-          email: data.email,
-          bio: data.bio,
-          avatar: data.avatar_url,
-          id: data.id,
-          githubRepo: data.html_url,
-          website: data.blog,
-          location: data.location,
-        });
-      })
-      .then(() => {
-        if (newUser) {
-          const userRef = ref(usersDb, 'users/' + newUser.id);
+      if (!githubUser) {
+        return;
+      }
 
-          //Checks if user is in the database alreay before adding them
-          onValue(userRef, (snapshot) => {
-            if (!snapshot.exists()) {
-              set(ref(usersDb, 'users/' + newUser.id), {
-                name: newUser.name,
-                username: newUser.username,
-                email: newUser.email,
-                bio: newUser.bio,
-                avatar: newUser.avatar,
-                id: newUser.id,
-                githubRepo: newUser.githubRepo,
-                website: newUser.website,
-                location: newUser.location
-              });
-            } else {
-              console.log('User already exists in the database');
-            };
-          });
-        }
-      })
-      .catch(err => { console.log(err) });
+      const userExists = devList.find(({ username }) => username === githubUser?.username);
 
-    return;
+      if (userExists) {
+        alert("User already exists in the Developers list.");
+        return;
+      }
+
+      setNewUser({ ...githubUser });
+
+      database.ref('users').push({ ...githubUser })
+        .then(() => {
+          // console.log(newUser?.email);
+          alert("User added to Dev List!");
+          setUpdate(!update);
+        })
+        .catch((err) => alert(err));
+
+      return;
+    }
   }
 
   async function logOff() {
     await auth.signOut();
     setUser(undefined);
     history.push("/");
+  }
+
+  async function handleRemoveUser() {
+    if (!user) {
+      throw new Error("User not defined.");
+    }
+
+    const userIndex = devList.findIndex(({ githubId }) => githubId == user.githubId);
+
+    if (userIndex < 0) {
+      alert("User not found");
+      return;
+    }
+
+    const userDbKey = devList[userIndex].id;
+
+    database.ref().child(`users/${userDbKey}`).remove((err) => {
+      if (err) {
+        alert(err);
+      } else {
+        alert("User sucessfuly deleted");
+        setUpdate(!update);
+      }
+    })
   }
 
   return (
@@ -135,8 +173,9 @@ export function DevList() {
           <h2>{user?.name}</h2>
         </div>
         <div className="headerButtons">
-          <button onClick={logOff}>Log off</button>
-          <button onClick={handleAddUser}>Add user</button>
+          <Button onClick={handleAddUser}>Add User</Button>
+          <Button onClick={logOff}>Log off</Button>
+          <Button onClick={handleRemoveUser}>Remove user</Button>
         </div>
       </header>
       <main>
@@ -158,7 +197,7 @@ export function DevList() {
                     <p><strong>Email: </strong>{dev.email}</p>
                     <div className="devLinks">
                       <a href={dev.githubRepo}>Github</a>
-                      <a href={dev.website}>Website</a>
+                      <a href={`http://${dev.website}`}>Website</a>
                     </div>
                   </div>
                 )

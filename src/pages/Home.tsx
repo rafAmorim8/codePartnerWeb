@@ -1,6 +1,5 @@
-import { useContext } from 'react';
 import { useHistory } from 'react-router-dom';
-import { AuthContext } from '../App';
+import { useAuth } from '../hooks/useAuth';
 
 import homeImg from '../assets/images/peerCoding.png';
 import githubIcon from '../assets/images/githubIcon.svg';
@@ -9,14 +8,14 @@ import '../styles/home.scss';
 
 export function Home() {
   const history = useHistory();
-  const { signInWithGithub, user } = useContext(AuthContext);
+  const { signInWithGithub, user } = useAuth();
 
   async function signIn() {
     if (!user) {
       await signInWithGithub();
     }
 
-    history.push('/devList');
+    history.push(`/devList`);
   }
 
   return (

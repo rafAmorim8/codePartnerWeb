@@ -28,11 +28,10 @@ header {
 
   .headerButtons {
     display: flex;
+    justify-content: space-between;
 
     button {
-      outline: none;
-      border: 0;
-      background: none;
+      margin-left: 32px;
     }
   }
 }
