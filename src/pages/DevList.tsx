@@ -12,6 +12,8 @@ import { LinkIcon } from "../components/LinkIcon";
 
 import '../styles/devList.scss';
 import { LogOutIcon } from "../components/LogOutIcon";
+import { UserAddIcon } from "../components/UserAddIcon";
+import { UserRemoveIcon } from "../components/UserRemoveIcon";
 
 type FirebaseUser = Record<string, {
   name: string;
@@ -176,10 +178,13 @@ export function DevList() {
         <div className="loggedUserInfo">
           <img src={user?.avatar} alt={user?.name} height={40} width={40} />
           <h2>{user?.name}</h2>
+          {
+            devList.findIndex(({ githubId }) => githubId == user?.githubId) === -1
+              ? <a onClick={handleAddUser}><UserAddIcon /></a>
+              : <a onClick={handleRemoveUser}><UserRemoveIcon /></a>
+          }
         </div>
         <div className="headerButtons">
-          <a onClick={handleAddUser}>Add User</a>
-          <a onClick={handleRemoveUser}>Remove user</a>
           <a onClick={logOff}><LogOutIcon /></a>
         </div>
       </header>

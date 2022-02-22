@@ -24,6 +24,22 @@ header {
     h2 {
       font-size: 1.2rem;
     }
+
+    a {
+      cursor: pointer;
+      margin-left: 5px;
+      display: flex;
+      height: 25px;
+
+      .useradd-icon {
+        color: green;
+      }
+
+      .userdelete-icon {
+        color: red;
+      }
+
+    }
   }
 
   .headerButtons {
