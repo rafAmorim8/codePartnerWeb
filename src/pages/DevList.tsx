@@ -7,6 +7,8 @@ import axios from 'axios';
 import { auth, database } from '../services/firebase';
 
 import '../styles/devList.scss';
+import { GithubIcon } from "../components/GithubIcon";
+import { LinkIcon } from "../components/LinkIcon";
 
 type FirebaseUser = Record<string, {
   name: string;
@@ -196,8 +198,12 @@ export function DevList() {
                     <p><strong>Location: </strong>{dev.location}</p>
                     <p><strong>Email: </strong>{dev.email}</p>
                     <div className="devLinks">
-                      <a href={dev.githubRepo}>Github</a>
-                      <a href={`http://${dev.website}`}>Website</a>
+                      <a href={dev.githubRepo}>
+                        <GithubIcon />
+                      </a>
+                      <a href={`http://${dev.website}`}>
+                        <LinkIcon />
+                      </a>
                     </div>
                   </div>
                 )
