@@ -116,7 +116,7 @@ export function DevList() {
         return;
       }
 
-      const userExists = devList.find(({ username }) => username === githubUser?.username);
+      const userExists = devList.find(({ username }) => username == githubUser?.username);
 
       if (userExists) {
         alert("User already exists in the Developers list.");
@@ -148,7 +148,7 @@ export function DevList() {
       throw new Error("User not defined.");
     }
 
-    const userIndex = devList.findIndex(({ githubId }) => githubId == user.githubId);
+    const userIndex = devList.findIndex(({ githubId }) => githubId === user.githubId);
 
     if (userIndex < 0) {
       alert("User not found");
