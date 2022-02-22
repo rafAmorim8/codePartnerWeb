@@ -148,7 +148,7 @@ export function DevList() {
       throw new Error("User not defined.");
     }
 
-    const userIndex = devList.findIndex(({ githubId }) => githubId === user.githubId);
+    const userIndex = devList.findIndex(({ githubId }) => githubId == user.githubId);
 
     if (userIndex < 0) {
       alert("User not found");
